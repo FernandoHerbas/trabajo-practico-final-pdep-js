@@ -60,6 +60,19 @@ function Pirata(items,monedas,nivelDeEbriedad){
     /*get nivelEbriedad() { //seria un getter pero no me funciona :/
         return this.nivelDeEbriedad; 
       }*/
+    this.tomarGrog = function(){
+        this.nivelDeEbriedad += 5;
+        gastarMoneda();
+    }
+    var gastarMoneda = function () {
+        validarGastarMonedas();
+        this.monedas--;
+    }
+    var validarGastarMonedas = function(){
+        if(this.cantidadDeMonedas() == 0){
+            throw console.error( 'Monedas insuficientes');
+        }
+    }
 }
 /************************************ Barco **************************************/
 function Barco(capacidad,tripulantes,mision){
@@ -101,30 +114,50 @@ function Barco(capacidad,tripulantes,mision){
             if(!(unaMision.esUtil(tripulantes[i])))        //use un poco de codigo imperativo.
                 tripulantes.splice(i,1);
         }
-        return tripulantes
+        return tripulantes;
     }
 //3  a-
     this.elPirataMasEbrio = function(){
-        return Math.max(...tripulantes.map(function(unTripulante){ //mapeo los tripulantes, tomando su nivel de
-            return unTripulante.nivelEbriedad();                   //ebriedad y luego con Math.max,tomo el maximo.
-        }))
+        return tripulantes.reduce((tripulante1,tripulante2) => 
+                                   Math.max(tripulante1.nivelEbriedad(),tripulante2.nivelEbriedad()));   
+    } 
+//   b-
+    this.anclarEn = function(unaCiudad){
+        todosTomanGrog();
+        perderMasEbrioEn(unaCiudad);    
     }
-
+    var todosTomanGrog = function(){
+        tripulantes.forEach(unTripulante => {
+            unTripulante.tomarGrog();
+        });
+    }
+    var perderMasEbrioEn = function(unaCiudad){
+        var posicion = tripulantes.indexOf(tripulantes.elPirataMasEbrio());
+        tripulantes.splice(posicion,1);
+        unaCiudad.sumarHabitante();
+    }
 }
 /************************************ Ciudad Costera **************************************/
-function CiudadCostera(){
+function CiudadCostera(habitantes){
+    this.habitantes = habitantes;
     this.sosSaqueablePor = function(unPirata){
         return unPirata.nivelEbriedad() >= 50;
+    }
+    this.sumarHabitante = function() {
+        this.habitantes = this.habitantes +1;
     }
 }
 
 
 /************************************ Para Probar en consola **************************************/
-var unBarco    = new Barco(2, ["pedro","lucas"]);
-var otroBarco  = new Barco(10,["luisito","pepe"]);
-var unaMision  = new Mision();
-var unPirata   = new Pirata(["mapa","grogXD","loro","brujula","espada","sombrero","pieDePalo",
+
+var pirata1    = new Pirata(["mapa","grogXD","loro","brujula","espada","sombrero","pieDePalo",
                             "dienteDeOro","cinturon","manoDeGancho"],4,100);
+var pirata2    = new Pirata(["dienteDeOro","cinturon"],4,120);
+var pirata3    = new Pirata(["dienteDeOro","sombrero"],4,80);
+var unBarco    = new Barco(2, [pirata2,pirata3]);
+var otroBarco  = new Barco(10,[pirata2,pirata3]);
+var unaMision  = new Mision();
 var unaCiudad  = new CiudadCostera();
 
 BusquedaDelTesoro.prototype = Object.create(Mision.prototype); // Para que contenga los metodos del prototipo Mision
@@ -143,7 +176,7 @@ var otroSaqueo  = new Saqueo(otroBarco,10);
 
 
 console.log(unaMision.esRealizablePorUnBarco(unBarco));
-console.log(unaBusqueda.esUtil(unPirata));
-console.log(unaLeyenda.esUtil(unPirata));
-console.log(unSaqueo.esUtil(unPirata));
-console.log(otroSaqueo.esUtil(unPirata));
+console.log(unaBusqueda.esUtil(pirata1));
+console.log(unaLeyenda.esUtil(pirata1));
+console.log(unSaqueo.esUtil(pirata1));
+console.log(otroSaqueo.esUtil(pirata1));
