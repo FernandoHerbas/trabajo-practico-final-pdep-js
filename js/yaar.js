@@ -6,7 +6,7 @@ function Mision() {
 }
 function BusquedaDelTesoro(){
     Mision.call(this); // heredo de mision
-
+//1
     this.esUtil = function(unPirata){
         return tieneAlgunItemObligatorio(unPirata) && unPirata.cantidadDeMonedas() <= 5; 
         //;
@@ -62,9 +62,10 @@ function Pirata(items,monedas,nivelDeEbriedad){
       }*/
 }
 /************************************ Barco **************************************/
-function Barco(capacidad,tripulantes){
+function Barco(capacidad,tripulantes,mision){
     this.capacidad = capacidad; 
     this.tripulantes = tripulantes;
+    this.mision = mision;
     this.tieneSuficienteTripulacion = function(){
         return cantidadTripulantes() >= capacidad * 0.9;
     }
@@ -75,7 +76,40 @@ function Barco(capacidad,tripulantes){
     this.sosSaqueablePor = function(unPirata) {
 		return unPirata.pasadoDeGrog();
     }
-	
+
+//2) a-  
+	this.puedeUnirse = function(unPirata){
+        return hayLugar() && this.mision.esUtil(unPirata);
+    }
+  
+    var hayLugar = function(){
+        return cantidadTripulantes() < this.capacidad;
+    }
+//   b-
+    this.agregar = function(){
+        if(this.puedeUnirse(unPirata)){
+            this.tripulantes.push(unPirata);
+        }
+    }
+//   c-
+    this.cambiarMision = function(unaMision){
+        eliminarInutiles(tripulantes,unaMision);
+        this.mision = unaMision; 
+    }
+    var eliminarInutiles = function(tripulantes,unaMision){//Como no existe un metodo que elimine segun una condicion,
+        for(var i = tripulantes.length - 1; i>=0 ;i--){    //ni tampoco un metodo que elimine un objeto determinado, 
+            if(!(unaMision.esUtil(tripulantes[i])))        //use un poco de codigo imperativo.
+                tripulantes.splice(i,1);
+        }
+        return tripulantes
+    }
+//3  a-
+    this.elPirataMasEbrio = function(){
+        return Math.max(...tripulantes.map(function(unTripulante){ //mapeo los tripulantes, tomando su nivel de
+            return unTripulante.nivelEbriedad();                   //ebriedad y luego con Math.max,tomo el maximo.
+        }))
+    }
+
 }
 /************************************ Ciudad Costera **************************************/
 function CiudadCostera(){
