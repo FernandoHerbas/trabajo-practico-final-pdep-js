@@ -1,6 +1,6 @@
 /************************************ Misiones **************************************/
 function Mision() {
-    this.esRealizablePorUnBarco = function (unBarco){ //this: es una referencia al objeto desde que se llama la funcion.
+    this.esRealizablePor = function (unBarco){ //this: es una referencia al objeto desde que se llama la funcion.
         return unBarco.tieneSuficienteTripulacion();
     }
 }
@@ -69,7 +69,7 @@ function Pirata(items,monedas,nivelDeEbriedad){
         this.monedas--;
     }
     var validarGastarMonedas = function(){
-        if(this.cantidadDeMonedas() == 0){
+        if(this.cantidadDeMonedas() === 0){
             throw console.error( 'Monedas insuficientes');
         }
     }
@@ -79,6 +79,7 @@ function Barco(capacidad,tripulantes,mision){
     this.capacidad = capacidad; 
     this.tripulantes = tripulantes;
     this.mision = mision;
+    var self = this;
     this.tieneSuficienteTripulacion = function(){
         return cantidadTripulantes() >= capacidad * 0.9;
     }
@@ -136,6 +137,10 @@ function Barco(capacidad,tripulantes,mision){
         tripulantes.splice(posicion,1);
         unaCiudad.sumarHabitante();
     }
+//4  a-
+    this.esTemible = function(){
+        mision.esRealizablePor();
+    }
 }
 /************************************ Ciudad Costera **************************************/
 function CiudadCostera(habitantes){
@@ -155,8 +160,7 @@ var pirata1    = new Pirata(["mapa","grogXD","loro","brujula","espada","sombrero
                             "dienteDeOro","cinturon","manoDeGancho"],4,100);
 var pirata2    = new Pirata(["dienteDeOro","cinturon"],4,120);
 var pirata3    = new Pirata(["dienteDeOro","sombrero"],4,80);
-var unBarco    = new Barco(2, [pirata2,pirata3]);
-var otroBarco  = new Barco(10,[pirata2,pirata3]);
+
 var unaMision  = new Mision();
 var unaCiudad  = new CiudadCostera();
 
@@ -172,10 +176,13 @@ Saqueo.prototype.constructor = Saqueo;
 var unaBusqueda = new BusquedaDelTesoro();
 var unaLeyenda  = new ConvertirseEnLeyenda("mapa");
 var unSaqueo    = new Saqueo(unaCiudad,5);
+var otroBarco  = new Barco(10,[pirata2,pirata3],unaMision);
 var otroSaqueo  = new Saqueo(otroBarco,10);
+var unBarco    = new Barco(2, [pirata2,pirata3],unSaqueo);
 
 
-console.log(unaMision.esRealizablePorUnBarco(unBarco));
+
+console.log(unaMision.esRealizablePor(unBarco));
 console.log(unaBusqueda.esUtil(pirata1));
 console.log(unaLeyenda.esUtil(pirata1));
 console.log(unSaqueo.esUtil(pirata1));
