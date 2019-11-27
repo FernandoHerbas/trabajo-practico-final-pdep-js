@@ -81,9 +81,9 @@ function Barco(capacidad,tripulantes,mision){
     this.mision = mision;
     var self = this;
     this.tieneSuficienteTripulacion = function(){
-        return cantidadTripulantes() >= capacidad * 0.9;
+        return this.cantidadTripulantes() >= this.capacidad * 0.9;
     }
-    var cantidadTripulantes = function(){
+    this.cantidadTripulantes = function(){
         return tripulantes.length;
     }
 
@@ -93,11 +93,11 @@ function Barco(capacidad,tripulantes,mision){
 
 //2) a-  
 	this.puedeUnirse = function(unPirata){
-        return hayLugar() && this.mision.esUtil(unPirata);
+        return this.hayLugar() && this.mision.esUtil(unPirata);
     }
-  
-    var hayLugar = function(){
-        return cantidadTripulantes() < this.capacidad;
+
+    this.hayLugar = function(){
+        return this.cantidadTripulantes() < this.capacidad;
     }
 //   b-
     this.agregar = function(){
@@ -124,22 +124,22 @@ function Barco(capacidad,tripulantes,mision){
     } 
 //   b-
     this.anclarEn = function(unaCiudad){
-        todosTomanGrog();
-        perderMasEbrioEn(unaCiudad);    
+        this.todosTomanGrog();
+        this.perderMasEbrioEn(unaCiudad);    
     }
-    var todosTomanGrog = function(){
+    this.todosTomanGrog = function(){
         tripulantes.forEach(unTripulante => {
             unTripulante.tomarGrog();
         });
     }
-    var perderMasEbrioEn = function(unaCiudad){
+    this.perderMasEbrioEn = function(unaCiudad){
         var posicion = tripulantes.indexOf(tripulantes.elPirataMasEbrio());
         tripulantes.splice(posicion,1);
         unaCiudad.sumarHabitante();
     }
 //4  a-
     this.esTemible = function(){
-        mision.esRealizablePor();
+        mision.esRealizablePor(self);
     }
 }
 /************************************ Ciudad Costera **************************************/
@@ -178,12 +178,14 @@ var unaLeyenda  = new ConvertirseEnLeyenda("mapa");
 var unSaqueo    = new Saqueo(unaCiudad,5);
 var otroBarco  = new Barco(10,[pirata2,pirata3],unaMision);
 var otroSaqueo  = new Saqueo(otroBarco,10);
-var unBarco    = new Barco(2, [pirata2,pirata3],unSaqueo);
+var unBarco    = new Barco(4, [pirata2,pirata3],unSaqueo);
 
 
 
-console.log(unaMision.esRealizablePor(unBarco));
-console.log(unaBusqueda.esUtil(pirata1));
-console.log(unaLeyenda.esUtil(pirata1));
-console.log(unSaqueo.esUtil(pirata1));
-console.log(otroSaqueo.esUtil(pirata1));
+//console.log('Verifica si es una mision es puede ser hecha por un barco',unaMision.esRealizablePor(unBarco));
+console.log('Pirata1 es util para la mision busqueda del tesoro:',unaBusqueda.esUtil(pirata1));
+console.log('Pirata1 es util para la mision convertirse en leyenda: ',unaLeyenda.esUtil(pirata1));
+console.log('Pirata1 es util para la mision saqueo a una ciudad costera: ',unSaqueo.esUtil(pirata1));
+console.log('Pirata1 es util para la mision saqueo a un barco: ',otroSaqueo.esUtil(pirata1));
+
+console.log('Saber si Pirata1 puede formar parte de la tripulacion de un barco: ',unBarco.puedeUnirse(pirata1));
