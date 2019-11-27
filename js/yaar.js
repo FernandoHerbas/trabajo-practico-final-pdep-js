@@ -100,7 +100,7 @@ function Barco(capacidad,tripulantes,mision){
         return this.cantidadTripulantes() < this.capacidad;
     }
 //   b-
-    this.agregar = function(){
+    this.agregar = function(unPirata){
         if(this.puedeUnirse(unPirata)){
             this.tripulantes.push(unPirata);
         }
@@ -189,3 +189,6 @@ console.log('Pirata1 es util para la mision saqueo a una ciudad costera: ',unSaq
 console.log('Pirata1 es util para la mision saqueo a un barco: ',otroSaqueo.esUtil(pirata1));
 
 console.log('Saber si Pirata1 puede formar parte de la tripulacion de un barco: ',unBarco.puedeUnirse(pirata1));
+console.log('Saber si Pirata1 puede formar parte de la tripulacion de un barco: ',unBarco.puedeUnirse(pirata1));
+unBarco.agregar(pirata1);
+console.log('Agregar a pirata1 a un barco: ' ,unBarco.cantidadTripulantes() === 3);
